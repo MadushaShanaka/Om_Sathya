@@ -3,612 +3,769 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OM ATHYA Restaurant - Menu</title>
+    <title>OM SATHYA Restaurant - Menu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
     <style>
-      :root {
-        --primary-color: #a31f1f; /* A deep red/brown for food */
-        --secondary-color: #2e8b57; /* Sea green for accents */
-        --text-dark: #333;
-        --text-light: #fff;
-        --background-light: #f7f7f7;
-        --cart-bg: #fff;
-        --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        --header-height: 80px; /* Estimated height for header */
-      }
+      /* Set Inter as the primary font and use a dark background */
       body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        background-color: var(--background-light);
-        color: var(--text-dark);
-        line-height: 1.6;
-        display: flex;
-        flex-direction: column; /* Ensure main body scrolls vertically */
-        min-height: 100vh;
+        font-family: "Inter", sans-serif;
+        background-color: #1a1a1a; /* Very dark gray for a premium feel */
+        color: #e5e7eb; /* Light gray text */
       }
-      #app {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
+      .menu-title {
+        letter-spacing: 0.25em;
+        text-shadow: 0 0 10px rgba(251, 191, 36, 0.5); /* Subtle glow on the main title */
       }
-      #header {
-        background-color: var(--primary-color);
-        color: var(--text-light);
-        padding: 10px 20px;
-        text-align: center;
-        box-shadow: var(--shadow);
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        height: var(--header-height); /* Set a fixed height */
-        box-sizing: border-box;
+      /* Custom scrollbar for aesthetics */
+      ::-webkit-scrollbar {
+        width: 8px;
       }
-      #menu-container {
-        padding: 20px;
-        flex-grow: 1;
-        /* Added padding to prevent content being hidden behind fixed cart on mobile */
-        padding-bottom: 150px;
-      }
-      .category {
-        margin-bottom: 30px;
-        padding: 15px;
-        background-color: var(--cart-bg);
-        border-radius: 8px;
-        box-shadow: var(--shadow);
-      }
-      .category h2 {
-        border-bottom: 2px solid var(--secondary-color);
-        padding-bottom: 5px;
-        margin-top: 0;
-        color: var(--primary-color);
-      }
-      .item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 0;
-        border-bottom: 1px dashed #ddd;
-      }
-      .item:last-child {
-        border-bottom: none;
-      }
-      .item-info {
-        flex-grow: 1;
-      }
-      .item-name {
-        font-weight: bold;
-        font-size: 1.1em;
-      }
-      .item-options {
-        display: flex;
-        align-items: center;
-      }
-      .item-options select {
-        margin-right: 10px;
-        padding: 5px;
-        border: 1px solid #ccc;
+      ::-webkit-scrollbar-thumb {
+        background: #4b5563; /* Gray-600 */
         border-radius: 4px;
       }
-      .add-btn {
-        background-color: var(--secondary-color);
-        color: var(--text-light);
-        border: none;
-        padding: 8px 12px;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-        font-weight: bold;
-      }
-      .add-btn:hover {
-        background-color: #247545;
-      }
-
-      /* Cart Styles (Mobile - Fixed Bottom) */
-      #cart-sidebar {
-        background-color: var(--cart-bg);
-        border-top: 1px solid #ddd;
-        padding: 15px;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-        z-index: 200;
-        box-sizing: border-box; /* Include padding/border in the element's total width/height */
-      }
-      #cart-list {
-        max-height: 200px;
-        overflow-y: auto;
-        margin-bottom: 10px;
-        padding: 5px 0;
-      }
-      .cart-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 5px 0;
-        border-bottom: 1px dotted #eee;
-      }
-      .cart-item-info {
-        flex-grow: 1;
-      }
-      .cart-item-name {
-        font-weight: bold;
-      }
-      .cart-item-actions button {
-        background: none;
-        border: 1px solid #ccc;
-        padding: 2px 6px;
-        cursor: pointer;
-        margin: 0 3px;
-        border-radius: 4px;
-      }
-      #total-container {
-        font-size: 1.2em;
-        font-weight: bold;
-        margin: 10px 0;
-        text-align: right;
-        border-top: 2px solid #eee;
-        padding-top: 10px;
-      }
-      #order-btn {
-        width: 100%;
-        background-color: var(--primary-color);
-        color: var(--text-light);
-        padding: 15px;
-        border: none;
-        border-radius: 6px;
-        font-size: 1.2em;
-        cursor: pointer;
-        transition: background-color 0.2s;
-      }
-      #order-btn:disabled {
-        background-color: #ccc;
-        cursor: not-allowed;
-      }
-
-      /* Desktop View: Menu and Cart are side-by-side and centered */
-      @media (min-width: 900px) {
-        #app {
-          max-width: 1200px;
-          margin: 0 auto;
-          flex-direction: column; /* Keep overall layout column */
-        }
-        #content-wrapper {
-          display: flex;
-          width: 100%;
-        }
-        #menu-container {
-          width: 65%; /* Menu takes up 65% of the centered content wrapper */
-          padding-bottom: 20px; /* Remove extra bottom padding */
-        }
-        #cart-sidebar {
-          /* Make cart sidebar sticky on the right */
-          position: sticky;
-          top: calc(
-            var(--header-height) + 10px
-          ); /* Position below the header */
-          bottom: auto;
-          width: 35%; /* Cart takes up 35% of the centered content wrapper */
-          height: auto;
-          max-height: calc(100vh - var(--header-height) - 20px);
-          box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-          order: 2;
-          border-top: none;
-          margin-left: 15px; /* Spacing between menu and cart */
-        }
-        #cart-list {
-          max-height: 40vh; /* Adjust height for comfortable desktop viewing */
-        }
+      ::-webkit-scrollbar-track {
+        background: #1f2937; /* Gray-800 */
       }
     </style>
   </head>
-  <body>
-    <div id="app">
-      <div id="header">
-        <h1>OM ATHYA Resturant Menu</h1>
-        <p id="table-display">
-          Welcome! Please scan the QR code to find your table.
+  <body class="min-h-screen">
+    <button
+      id="cart-button"
+      onclick="window.showCartModal()"
+      class="fixed top-4 right-4 sm:top-6 sm:right-6 z-50 p-3 rounded-full bg-amber-500 hover:bg-amber-600 transition duration-150 shadow-lg"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6 text-white"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+        />
+      </svg>
+      <span
+        id="cart-count"
+        class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full"
+        style="display: none"
+        >0</span
+      >
+    </button>
+
+    <div id="app" class="max-w-7xl mx-auto py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+      <header class="text-center mb-12 border-b border-amber-500/30 pb-6">
+        <h1
+          class="menu-title text-4xl sm:text-6xl font-extrabold uppercase text-amber-500"
+        >
+          OM SATHYA
+        </h1>
+        <p class="text-xl sm:text-2xl font-light text-gray-300 mt-2">
+          Authentic Sri Lankan & Asian Cuisine
         </p>
-      </div>
+        <div class="mt-4 text-sm text-gray-400">
+          <p>
+            Call Us:
+            <span class="font-semibold text-amber-400">041 228 87 22</span> /
+            <span class="font-semibold text-amber-400">070 288 87 22</span>
+          </p>
+        </div>
+        <div id="table-display" class="mt-2 text-lg font-bold"></div>
+      </header>
 
-      <div id="content-wrapper">
-        <div id="menu-container"></div>
+      <main
+        id="menu-container"
+        class="max-w-4xl mx-auto space-y-12 pb-8"
+      ></main>
 
-        <div id="cart-sidebar">
-          <h2>Your Order Cart</h2>
-          <div id="cart-list"></div>
-          <div id="total-container">
-            Total: LKR <span id="cart-total">0.00</span>
+      <div
+        id="cart-modal"
+        class="hidden fixed inset-0 bg-black bg-opacity-70 z-[100] flex items-center justify-center p-4"
+        onclick="window.closeCartModal()"
+      >
+        <div
+          class="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
+          onclick="event.stopPropagation()"
+        >
+          <div
+            class="p-4 sm:p-6 border-b border-gray-200 sticky top-0 bg-white z-10"
+          >
+            <div class="flex justify-between items-center">
+              <h3 class="text-2xl font-bold text-gray-900 flex items-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6 mr-2 text-amber-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
+                </svg>
+                Your Order Cart
+              </h3>
+              <button
+                onclick="window.closeCartModal()"
+                class="text-gray-400 hover:text-gray-600 transition"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
-          <button id="order-btn" onclick="placeOrder()" disabled>
-            Place Order via WhatsApp
-          </button>
+
+          <div id="cart-items-container" class="p-4 sm:p-6">
+            <p class="text-center text-gray-500 py-4">Your cart is empty.</p>
+          </div>
+
+          <div
+            class="p-4 sm:p-6 border-t border-gray-200 sticky bottom-0 bg-white z-10"
+          >
+            <div
+              class="flex justify-between items-center text-xl font-bold text-gray-900 mb-4"
+            >
+              <span>Total:</span>
+              <span id="cart-total" class="font-mono text-3xl text-amber-600"
+                >Rs. 0.00</span
+              >
+            </div>
+
+            <button
+              id="whatsapp-checkout-button"
+              onclick="window.sendWhatsAppOrder()"
+              class="w-full py-3 bg-green-500 hover:bg-green-600 text-white text-lg font-semibold rounded-lg shadow-md transition duration-150 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 mr-2"
+                fill="white"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12.04 2.25c-5.45 0-9.88 4.43-9.88 9.88 0 1.94.55 3.76 1.57 5.37L2.11 22.09l4.63-1.42c1.55.85 3.32 1.33 5.3 1.33 5.45 0 9.88-4.43 9.88-9.88s-4.43-9.88-9.88-9.88zm3.87 14.86c-.23.54-1.41.69-2.02.66-.6-.04-1.05-.18-2.03-.63-.37-.17-.74-.38-1.07-.61-.71-.48-1.39-1.08-1.92-1.78-.54-.7-.94-1.49-1.22-2.34-.23-.68-.19-1.25-.19-1.34s0-.21.03-.4c.04-.26.06-.46.09-.64.03-.22.14-.52.28-.73.14-.2.32-.4.51-.59.19-.19.42-.4.65-.59.23-.19.49-.36.75-.52.27-.16.53-.3.8-.44.27-.14.53-.24.78-.34.25-.1.5-.16.74-.18.2-.02.3-.01.37.01.07.02.13.04.18.06.05.02.08.05.14.11.05.06.12.16.27.35.15.19.34.46.52.74.19.28.37.62.5 1.05.13.43.2.91.2 1.43 0 .4-.07.7-.13.92-.07.22-.2.43-.36.63-.16.2-.34.39-.55.56-.2.17-.43.33-.68.49-.07.04-.15.08-.2.11-.05.03-.1.06-.15.09-.13.06-.23.13-.3.19-.08.06-.16.14-.24.23-.08.09-.17.2-.27.31-.1.11-.21.24-.3.38-.1.14-.2.28-.27.4-.08.13-.15.27-.2.42-.05.15-.07.27-.08.38-.01.11-.01.21-.01.31s.01.21.04.34c.03.13.08.26.15.4.07.14.15.28.26.43.1.15.23.3.38.45.15.15.31.3.5.47.18.17.38.34.6.5.21.16.43.32.68.48.24.16.48.3.74.43.25.13.5.25.75.36.25.12.5.23.73.32.22.09.43.16.63.22.2.06.39.09.56.09.18 0 .34-.03.49-.09.15-.06.29-.15.42-.27.13-.12.24-.26.34-.43.1-.17.18-.36.25-.56.06-.2.11-.4.12-.6.01-.2-.02-.38-.08-.54-.06-.16-.16-.32-.3-.49z"
+                />
+              </svg>
+              Send Order via WhatsApp
+            </button>
+            <p class="text-xs text-center text-gray-400 mt-2">
+              WhatsApp message will be pre-filled with your order details and
+              table number.
+            </p>
+          </div>
         </div>
       </div>
-    </div>
 
-    <script>
-      // --- CONFIGURATION ---
-      const WHATSAPP_NUMBER = "94702888722"; // Use E.164 format (Country code + number, no spaces/symbols)
-      const RESTAURANT_NAME = "OM ATHYA Resturant";
+      <script type="module">
+        import { MENU_DATA } from "./menu.js";
 
-      // --- MENU DATA STRUCTURE ---
-      // 'Meal Bases' have a 'size' property to distinguish between 'full' and 'normal' prices.
-      const menuData = [
-        {
-          category: "Basmathi Fride Rice",
-          basePrice: true,
-          items: [
-            { name: "Vegitable", prices: { full: 600.0, normal: 500.0 } },
-            { name: "Egg", prices: { full: 800.0, normal: 650.0 } },
-            { name: "Chicken", prices: { full: 1000.0, normal: 800.0 } },
-            { name: "Mix", prices: { full: 1400.0, normal: 1200.0 } },
-            { name: "Seafood", prices: { full: 1300.0, normal: 1100.0 } },
-          ],
-        },
-        {
-          category: "Kottu",
-          basePrice: true,
-          items: [
-            { name: "Vegitable", prices: { full: 600.0, normal: 500.0 } },
-            { name: "Egg", prices: { full: 800.0, normal: 650.0 } },
-            { name: "Chicken", prices: { full: 1000.0, normal: 800.0 } },
-            { name: "Mix", prices: { full: 1400.0, normal: 1200.0 } },
-            { name: "Seafood", prices: { full: 1300.0, normal: 1100.0 } },
-          ],
-        },
-        {
-          category: "Noodles",
-          basePrice: true,
-          items: [
-            { name: "Vegitable", prices: { full: 600.0, normal: 500.0 } },
-            { name: "Egg", prices: { full: 800.0, normal: 650.0 } },
-            { name: "Chicken", prices: { full: 1000.0, normal: 800.0 } },
-            { name: "Mix", prices: { full: 1400.0, normal: 1200.0 } },
-            { name: "Seafood", prices: { full: 1300.0, normal: 1100.0 } },
-          ],
-        },
-        {
-          category: "Sring Hoppers Kottu",
-          basePrice: true,
-          items: [
-            { name: "Vegitable", prices: { full: 500.0, normal: 450.0 } },
-            { name: "Egg", prices: { full: 650.0, normal: 500.0 } },
-            { name: "Chicken", prices: { full: 800.0, normal: 600.0 } },
-            { name: "Cheese", prices: { full: 1000.0, normal: 900.0 } },
-            { name: "Mix", prices: { full: 1300.0, normal: 1200.0 } },
-          ],
-        },
-        // Fixed Price Items (No Size/Type selection)
-        {
-          category: "Rice (Fixed Price)",
-          items: [
-            { name: "Nasi goreng Rice", price: 1600.0 },
-            { name: "Biriyani Rice", price: 1700.0 },
-            { name: "Mongolian Rice", price: 1600.0 },
-          ],
-        },
-        {
-          category: "Chopsuey Rice",
-          items: [
-            { name: "Chicken", price: 2000.0 },
-            { name: "Seafood", price: 2500.0 },
-            { name: "Mix", price: 2800.0 },
-            { name: "Vegitable", price: 1600.0 },
-          ],
-        },
-        {
-          category: "Chopsuey",
-          items: [
-            { name: "Vegitable Chopsuey", price: 700.0 },
-            { name: "Chicken Chopsuey", price: 1300.0 },
-            { name: "Seafood Chopsuey", price: 1600.0 },
-            { name: "Mix Chopsuey", price: 1900.0 },
-          ],
-        },
-        {
-          category: "Omlet",
-          items: [
-            { name: "Chicken Omlet", price: 700.0 },
-            { name: "Egg Omlet", price: 400.0 },
-            { name: "Cheese Omlet", price: 800.0 },
-            { name: "Cheese Chicken Omlet", price: 950.0 },
-            { name: "Omlet + Vegetable Salad (Add-on)", price: 60.0 },
-            { name: "Omlet + Chicken Salad Chips (Add-on)", price: 150.0 },
-          ],
-        },
-        {
-          category: "Speciate / Bites",
-          items: [
-            {
-              name: "Speciate Platter (Chips 100g, Chicken 200g, Sauces)",
-              price: 2500.0,
-            },
-            { name: "Chicken Bite - Fried (400g)", price: 1700.0 },
-            { name: "Chicken Bite - Curry (400g)", price: 1700.0 },
-            { name: "Chicken Bite - Devilled (400g)", price: 1700.0 },
-            { name: "Prawns Bite - Fried (400g)", price: 1700.0 },
-            { name: "Prawns Bite - Curry", price: 2000.0 },
-            { name: "Prawns Bite - Butter Fried", price: 2000.0 },
-            { name: "Prawns Bite - Devilled", price: 2000.0 },
-            { name: "Prawns Bite - Hot Butter", price: 2000.0 },
-            { name: "Gal Malu Bite (400g)", price: 2000.0 },
-            { name: "Cuttle Fish Bite - Stew (400g)", price: 2000.0 },
-            { name: "Cuttle Fish Bite - Butter (400g)", price: 2000.0 },
-            { name: "Cuttle Fish Bite - Butter Fried (400g)", price: 2000.0 },
-            { name: "Cuttle Fish Bite - Devilled (400g)", price: 2000.0 },
-            { name: "Fish Bite - Fried (400g)", price: 1700.0 },
-            { name: "Thalapath Bite - Curry (400g)", price: 2000.0 },
-            { name: "Hot Butter Mushroom", price: 700.0 },
-            { name: "Sausage (10 fingers) - Fried/Devilled", price: 700.0 },
-          ],
-        },
-        {
-          category: "Bite - Vegetable & Sides",
-          items: [
-            { name: "Vegetable Bite - Boiled", price: 700.0 },
-            { name: "Vegetable Bite - Cashew", price: 800.0 },
-            { name: "Vegetable Salad Bite", price: 700.0 },
-            { name: "Potato Chips", price: 600.0 },
-            { name: "Stir Fried Veg", price: 600.0 },
-            { name: "Onion Salad", price: 250.0 },
-          ],
-        },
-      ];
+        const formatPrice = (price) => price.toFixed(2);
+        const WHATSAPP_NUMBER = "94710656542";
 
-      // --- GLOBAL STATE ---
-      let cart = [];
-      let tableNumber = null;
+        window.MENU_DATA = MENU_DATA;
+        window.cart = [];
+        window.tableNumber = null;
 
-      // --- INITIALIZATION ---
-      document.addEventListener("DOMContentLoaded", () => {
-        parseTableId();
-        renderMenu();
-        updateCart();
-      });
+        // Function to get table number from URL
+        const getTableNumberFromUrl = () => {
+          const urlParams = new URLSearchParams(window.location.search);
+          // The parameter for the table number is assumed to be 'table'
+          window.tableNumber = urlParams.get("table") || null;
+        };
 
-      // --- TABLE ID HANDLER ---
-      function parseTableId() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const table = urlParams.get("table");
-        const tableDisplay = document.getElementById("table-display");
+        // Function to update the table number display in the header
+        window.updateTableDisplay = () => {
+          const displayElement = document.getElementById("table-display");
+          if (!displayElement) return;
 
-        if (table && !isNaN(parseInt(table))) {
-          tableNumber = parseInt(table);
-          tableDisplay.innerHTML = `You are ordering from **Table ${tableNumber}**!`;
-        } else {
-          tableDisplay.innerHTML =
-            "Table number not found in URL. Please scan the QR code to order.";
-        }
-      }
+          if (window.tableNumber) {
+            // Display the table number clearly if found
+            displayElement.innerHTML = `You are ordering for <span class="text-amber-500 text-2xl">TABLE ${window.tableNumber}</span>`;
+            displayElement.classList.add("text-gray-300");
+            displayElement.classList.remove("text-red-400");
+          } else {
+            // Display a warning if the table number is missing
+            displayElement.innerHTML = `<span class="text-red-400">Table number is missing. Please scan the QR code.</span>`;
+            displayElement.classList.remove("text-gray-300");
+            displayElement.classList.add("text-red-400");
+          }
+        };
 
-      // --- MENU RENDERING ---
-      function renderMenu() {
-        const menuContainer = document.getElementById("menu-container");
-        menuContainer.innerHTML = "";
+        // --- Cart Management Functions (UPDATED) ---
 
-        menuData.forEach((cat, catIndex) => {
-          const categoryDiv = document.createElement("div");
-          categoryDiv.className = "category";
-          categoryDiv.innerHTML = `<h2>${cat.category}</h2>`;
+        // Function to remove an item entirely from the cart
+        window.removeItemCompletely = (cartId) => {
+          const existingItemIndex = window.cart.findIndex(
+            (i) => i.id === cartId
+          );
 
-          cat.items.forEach((item, itemIndex) => {
-            const itemDiv = document.createElement("div");
-            itemDiv.className = "item";
+          if (existingItemIndex > -1) {
+            window.cart.splice(existingItemIndex, 1);
+            window.updateCartCount();
+            window.showCartModal(); // Re-render the modal to show changes
+            console.log(`Item with ID ${cartId} removed completely from cart.`);
+          }
+        };
 
-            const itemInfo = document.createElement("div");
-            itemInfo.className = "item-info";
-            itemInfo.innerHTML = `<div class="item-name">${item.name}</div>`;
+        // Function to change item quantity (+1 or -1)
+        window.changeItemQuantity = (cartId, delta) => {
+          const existingItemIndex = window.cart.findIndex(
+            (i) => i.id === cartId
+          );
 
-            const itemOptions = document.createElement("div");
-            itemOptions.className = "item-options";
+          if (existingItemIndex > -1) {
+            window.cart[existingItemIndex].quantity += delta;
 
-            let priceToDisplay;
-
-            if (cat.basePrice) {
-              // For items with 'full' and 'normal' sizes (Rice, Kottu, Noodles)
-              priceToDisplay = `LKR ${item.prices.full.toFixed(2)} (Full)`;
-
-              const sizeSelect = document.createElement("select");
-              sizeSelect.id = `select-${catIndex}-${itemIndex}`;
-
-              // Add Full option
-              let fullOption = document.createElement("option");
-              fullOption.value = `full:${item.prices.full}`;
-              fullOption.textContent = `Full (LKR ${item.prices.full.toFixed(
-                2
-              )})`;
-              sizeSelect.appendChild(fullOption);
-
-              // Add Normal option
-              let normalOption = document.createElement("option");
-              normalOption.value = `normal:${item.prices.normal}`;
-              normalOption.textContent = `Normal (LKR ${item.prices.normal.toFixed(
-                2
-              )})`;
-              sizeSelect.appendChild(normalOption);
-
-              itemOptions.appendChild(sizeSelect);
-            } else {
-              // For fixed-price items
-              priceToDisplay = `LKR ${item.price.toFixed(2)}`;
-              itemInfo.innerHTML += `<div>${priceToDisplay}</div>`;
+            // If quantity drops to 0 or less, remove the item entirely
+            if (window.cart[existingItemIndex].quantity <= 0) {
+              window.cart.splice(existingItemIndex, 1);
             }
 
-            const addBtn = document.createElement("button");
-            addBtn.className = "add-btn";
-            addBtn.textContent = "Add to Cart";
-            addBtn.onclick = () =>
-              addItemToCart(
-                catIndex,
-                itemIndex,
-                cat.basePrice
-                  ? document.getElementById(`select-${catIndex}-${itemIndex}`)
-                      .value
-                  : null
-              );
+            window.updateCartCount();
+            window.showCartModal(); // Re-render the modal content immediately
+          }
+        };
 
-            itemOptions.appendChild(addBtn);
-
-            itemDiv.appendChild(itemInfo);
-            itemDiv.appendChild(itemOptions);
-            categoryDiv.appendChild(itemDiv);
-          });
-
-          menuContainer.appendChild(categoryDiv);
-        });
-      }
-
-      // --- CART LOGIC ---
-      function addItemToCart(catIndex, itemIndex, sizeValue) {
-        const cat = menuData[catIndex];
-        const item = cat.items[itemIndex];
-
-        let itemName = item.name;
-        let itemPrice;
-        let cartItemId;
-
-        if (cat.basePrice) {
-          // Base Price Item (Rice, Kottu, Noodles, Sring Hoppers Kottu)
-          const [size, price] = sizeValue.split(":");
-          itemName = `${item.name} (${
-            size.charAt(0).toUpperCase() + size.slice(1)
-          })`;
-          itemPrice = parseFloat(price);
-          cartItemId = `${catIndex}-${itemIndex}-${size}`;
-        } else {
-          // Fixed Price Item
-          itemPrice = item.price;
-          cartItemId = `${catIndex}-${itemIndex}-fixed`;
-        }
-
-        const existingItem = cart.find((i) => i.id === cartItemId);
-
-        if (existingItem) {
-          existingItem.quantity++;
-        } else {
-          cart.push({
-            id: cartItemId,
-            name: itemName,
-            price: itemPrice,
-            quantity: 1,
-          });
-        }
-
-        updateCart();
-      }
-
-      function changeQuantity(itemId, delta) {
-        const item = cart.find((i) => i.id === itemId);
-        if (!item) return;
-
-        item.quantity += delta;
-
-        if (item.quantity <= 0) {
-          cart = cart.filter((i) => i.id !== itemId);
-        }
-
-        updateCart();
-      }
-
-      function updateCart() {
-        const cartList = document.getElementById("cart-list");
-        const cartTotalSpan = document.getElementById("cart-total");
-        const orderBtn = document.getElementById("order-btn");
-        let total = 0;
-
-        if (!cartList || !cartTotalSpan || !orderBtn) {
-          return;
-        }
-
-        // Clear the existing cart display
-        cartList.innerHTML = "";
-
-        if (cart.length === 0) {
-          // Dynamically add the "empty" message when the cart is empty
-          const p = document.createElement("p");
-          p.textContent = "Your cart is empty.";
-          p.style.fontStyle = "italic";
-          cartList.appendChild(p);
-          orderBtn.disabled = true;
-        } else {
-          orderBtn.disabled = tableNumber === null;
-
-          cart.forEach((item) => {
-            const itemTotal = item.price * item.quantity;
-            total += itemTotal;
-
-            const cartItemDiv = document.createElement("div");
-            cartItemDiv.className = "cart-item";
-
-            cartItemDiv.innerHTML = `
-                        <div class="cart-item-info">
-                            ${item.quantity}x **${item.name}** <br>
-                            <small>LKR ${item.price.toFixed(2)} each</small>
-                        </div>
-                        <div class="cart-item-actions">
-                            <button onclick="changeQuantity('${
-                              item.id
-                            }', -1)">-</button>
-                            <button onclick="changeQuantity('${
-                              item.id
-                            }', 1)">+</button>
-                        </div>
-                        <div class="cart-item-price">LKR ${itemTotal.toFixed(
-                          2
-                        )}</div>
-                    `;
-            cartList.appendChild(cartItemDiv);
-          });
-        }
-
-        cartTotalSpan.textContent = total.toFixed(2);
-        if (tableNumber === null) {
-          orderBtn.textContent = "Place Order (Table ID Missing)";
-        } else {
-          orderBtn.textContent = `Place Order via WhatsApp (Total: LKR ${total.toFixed(
-            2
-          )})`;
-        }
-      }
-
-      // --- WHATSAPP GENERATOR ---
-      function placeOrder() {
-        if (cart.length === 0 || tableNumber === null) {
-          alert(
-            "Please select items and ensure a Table ID is present in the URL."
+        window.updateCartCount = () => {
+          const count = window.cart.reduce(
+            (total, item) => total + item.quantity,
+            0
           );
-          return;
+          const cartCountElement = document.getElementById("cart-count");
+          if (cartCountElement) {
+            cartCountElement.textContent = count;
+            // Show/hide the counter badge
+            cartCountElement.style.display = count > 0 ? "inline-flex" : "none";
+          }
+        };
+
+        window.handleAddToCartClick = (button) => {
+          const isDualSize = button.dataset.isDualSize === "true";
+          const isFlavoured = button.dataset.isFlavoured === "true";
+          const itemId = button.dataset.itemId;
+
+          let originalItem = null;
+          window.MENU_DATA.forEach((category, catIndex) => {
+            category.items.forEach((item, itemIndex) => {
+              if (`item-${catIndex}-${itemIndex}` === itemId) {
+                originalItem = { ...item, catIndex, itemIndex };
+              }
+            });
+          });
+
+          if (!originalItem) {
+            console.error("Item data not found for ID:", itemId);
+            return;
+          }
+
+          let price, name, cartId;
+
+          if (isDualSize) {
+            const sizeSelectorName =
+              originalItem.name.replace(/\s/g, "-") + "-size-" + itemId;
+            const selectedRadio = document.querySelector(
+              `input[name='${sizeSelectorName}']:checked`
+            );
+            const size = selectedRadio ? selectedRadio.value : "normal";
+            price = originalItem.sizes[size];
+            name = `${originalItem.name} (${
+              size.charAt(0).toUpperCase() + size.slice(1)
+            })`;
+            cartId = `${originalItem.name}-${size}`;
+          } else if (isFlavoured) {
+            const sizeSelectorName =
+              originalItem.name.replace(/\s/g, "-") + "-size-" + itemId;
+            const selectedRadio = document.querySelector(
+              `input[name='${sizeSelectorName}']:checked`
+            );
+            const size = selectedRadio ? selectedRadio.value : "fride";
+            price = originalItem.flavors[size];
+            name = `${originalItem.name} (${
+              size.charAt(0).toUpperCase() + size.slice(1)
+            })`;
+            cartId = `${originalItem.name}-${size}`;
+          } else {
+            price = originalItem.price;
+            name = originalItem.name;
+            cartId = originalItem.name;
+          }
+
+          const cartItem = {
+            id: cartId,
+            name: name,
+            price: price,
+            quantity: 1,
+          };
+
+          const existingItemIndex = window.cart.findIndex(
+            (i) => i.id === cartItem.id
+          );
+
+          if (existingItemIndex > -1) {
+            window.cart[existingItemIndex].quantity += 1;
+          } else {
+            window.cart.push(cartItem);
+          }
+
+          window.updateCartCount();
+          console.log(
+            `Added 1 x ${cartItem.name} (Rs. ${formatPrice(
+              cartItem.price
+            )}) to cart.`
+          );
+        };
+
+        // --- Modal Functions (UPDATED) ---
+
+        window.closeCartModal = () => {
+          document.getElementById("cart-modal").classList.add("hidden");
+        };
+
+        window.showCartModal = () => {
+          const modal = document.getElementById("cart-modal");
+          const cartItemsContainer = document.getElementById(
+            "cart-items-container"
+          );
+          const cartTotalElement = document.getElementById("cart-total");
+          const checkoutButton = document.getElementById(
+            "whatsapp-checkout-button"
+          );
+
+          let total = 0;
+          let itemsHtml = "";
+
+          if (window.cart.length === 0) {
+            itemsHtml =
+              '<p class="text-center text-gray-500 py-4 font-semibold text-lg">Your cart is empty. Please add some delicious items!</p>';
+            cartTotalElement.textContent = `Rs. 0.00`;
+            checkoutButton.disabled = true;
+            checkoutButton.classList.add("opacity-50", "cursor-not-allowed");
+          } else {
+            // Generate items table
+            let rowsHtml = window.cart
+              .map((item) => {
+                const subtotal = item.price * item.quantity;
+                total += subtotal;
+                // Escape single quotes in the item ID for safe use in JS string passed in HTML
+                const encodedItemId = item.id.replace(/'/g, "\\'");
+
+                return `
+                  <tr class="border-b last:border-b-0 group">
+                      <td class="py-3 px-1 text-left font-medium text-gray-700 w-3/5">${
+                        item.name
+                      }</td>
+
+                      <td class="py-3 px-1 text-center w-1/5">
+                          <div class="flex items-center justify-center space-x-1">
+                              <button onclick="window.changeItemQuantity('${encodedItemId}', -1)"
+                                      class="p-1 rounded-full text-red-500 hover:bg-red-100 transition"
+                                      title="Decrease Quantity">
+                                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                      <path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                                  </svg>
+                              </button>
+                              <span class="font-bold text-gray-800 w-4 text-center">${
+                                item.quantity
+                              }</span>
+                              <button onclick="window.changeItemQuantity('${encodedItemId}', 1)"
+                                      class="p-1 rounded-full text-green-500 hover:bg-green-100 transition"
+                                      title="Increase Quantity">
+                                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                      <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                                  </svg>
+                              </button>
+                          </div>
+                      </td>
+
+                      <td class="py-3 px-1 text-right font-mono text-base font-semibold text-amber-600 w-1/5">Rs. ${formatPrice(
+                        subtotal
+                      )}</td>
+
+                      <td class="py-3 px-1 text-right w-1/12">
+                          <button onclick="window.removeItemCompletely('${encodedItemId}')"
+                                  class="p-1 rounded-full text-gray-400 hover:text-red-600 hover:bg-red-50 transition"
+                                  title="Remove item completely">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.892a2 2 0 01-2 2H7.733a2 2 0 01-2-2L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                          </button>
+                      </td>
+                  </tr>
+              `;
+              })
+              .join("");
+
+            itemsHtml = `
+              <div class="overflow-x-auto">
+                  <table class="min-w-full divide-y divide-gray-200">
+                      <thead>
+                          <tr class="text-gray-500 text-xs uppercase tracking-wider bg-gray-50">
+                              <th class="py-2 px-1 text-left font-semibold w-3/5">Item</th>
+                              <th class="py-2 px-1 text-center font-semibold w-1/5">Qty</th>
+                              <th class="py-2 px-1 text-right font-semibold w-1/5">Price</th>
+                              <th class="py-2 px-1 text-right font-semibold w-1/12"></th>
+                          </tr>
+                      </thead>
+                      <tbody class="bg-white divide-y divide-gray-100">
+                          ${rowsHtml}
+                      </tbody>
+                  </table>
+              </div>
+          `;
+
+            cartTotalElement.textContent = `Rs. ${formatPrice(total)}`;
+            checkoutButton.disabled = false;
+            checkoutButton.classList.remove("opacity-50", "cursor-not-allowed");
+          }
+
+          // Update modal content and set up WhatsApp button
+          cartItemsContainer.innerHTML = itemsHtml;
+          checkoutButton.onclick = () => window.sendWhatsAppOrder(total);
+
+          // Show modal
+          modal.classList.remove("hidden");
+        };
+
+        window.sendWhatsAppOrder = (total) => {
+          if (window.cart.length === 0) return;
+
+          let message = "";
+
+          // 1. Add Table Number or a note
+          if (window.tableNumber) {
+            message += `*DINE-IN ORDER FOR TABLE NO: ${window.tableNumber}*\n\n`;
+          } else {
+            message += "*DINE-IN ORDER (Table Number Not Found)*\n\n";
+          }
+
+          // 2. Format the order details
+          message +=
+            "Hello OM SATHYA Restaurant,\n\nI would like to place an order:\n\n";
+
+          window.cart.forEach((item, index) => {
+            const subtotal = item.price * item.quantity;
+            // message += `${index + 1}. ${item.quantity}x ${
+            //   item.name
+            // } (Rs. ${formatPrice(
+            //   item.price
+            // )} each) - Subtotal: Rs. ${formatPrice(subtotal)}\n`;
+            message += `${index + 1}. ${item.quantity}x ${item.name} \n`;
+          });
+
+          //   message += `\n*Grand Total: Rs. ${formatPrice(total)}*\n\n`;
+          message += "\nPlease prepare the order and confirm. Thank you!";
+
+          // 3. Encode the message for the URL
+          const encodedMessage = encodeURIComponent(message);
+
+          // 4. Construct the WhatsApp URL
+          const whatsappURL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
+
+          // 5. Open the link in a new tab
+          window.open(whatsappURL, "_blank");
+
+          // Optional: Close the modal after clicking the button
+          window.closeCartModal();
+        };
+
+        // --- Menu Injection Logic ---
+
+        function injectMenu() {
+          const menuTarget = document.getElementById("menu-container");
+          if (!menuTarget) return;
+          let htmlContent = "";
+
+          MENU_DATA.forEach((category, catIndex) => {
+            htmlContent += `
+        <section class="bg-white p-6 sm:p-8 rounded-xl shadow-lg border-t-4 border-amber-500">
+          <h2 class="text-3xl font-bold text-gray-800 mb-2 border-b-2 border-amber-200 pb-2">${
+            category.category
+          }</h2>
+          ${
+            category.description
+              ? `<p class="text-sm text-gray-500 mb-6">${category.description}</p>`
+              : ""
+          }
+          <div class="space-y-4">
+            ${category.items
+              .map((item, itemIndex) => {
+                const itemId = `item-${catIndex}-${itemIndex}`;
+
+                if (item.sizes) {
+                  // Dual Size Item Block
+                  return `
+                  <div class="flex flex-col border-b border-dashed border-gray-100 pb-2">
+                    <div class="font-medium text-gray-700 mb-2">${
+                      item.name
+                    }</div>
+
+                    <div class="flex justify-between items-center flex-wrap gap-2">
+                        <div class="flex items-center space-x-4 text-sm text-gray-700"
+
+                            <label class="flex items-center">
+                                <input type="radio" name="${item.name.replace(
+                                  /\s/g,
+                                  "-"
+                                )}-size-${itemId}" value="normal" checked class="h-4 w-4 text-amber-600 border-gray-300 focus:ring-amber-500">
+                                <span class="ml-1">Normal (Rs. ${formatPrice(
+                                  item.sizes.normal
+                                )})</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="${item.name.replace(
+                                  /\s/g,
+                                  "-"
+                                )}-size-${itemId}" value="full" class="h-4 w-4 text-amber-600 border-gray-300 focus:ring-amber-500">
+                                <span class="ml-1 font-bold text-amber-700">Full (Rs. ${formatPrice(
+                                  item.sizes.full
+                                )})</span>
+                            </label>
+
+                        </div>
+
+                        <button
+                            onclick="window.handleAddToCartClick(this)"
+                            data-item-id="${itemId}"
+                            data-is-dual-size="true"
+                            data-is-flavoured="false"
+                            class="flex-shrink-0 px-3 py-1 text-sm font-semibold text-white bg-green-500 rounded-lg hover:bg-green-600 transition duration-150">
+                            Add to Cart
+                        </button>
+                    </div>
+                  </div>`;
+                }
+                if (item.flavors) {
+                  // Flovours Block
+                  return `
+                  <div class="flex flex-col border-b border-dashed border-gray-100 pb-2">
+                    <div class="font-medium text-gray-700 mb-2">${
+                      item.name
+                    }</div>
+
+                    <div class="flex justify-between items-center flex-wrap gap-2">
+                        <div class="flex items-center space-x-4 text-sm text-gray-700">
+                          ${
+                            item.flavors.fride
+                              ? `
+                            <label class="flex items-center">
+                                <input type="radio" name="${item.name.replace(
+                                  /\s/g,
+                                  "-"
+                                )}-size-${itemId}" value="fride" checked class="h-4 w-4 text-amber-600 border-gray-300 focus:ring-amber-500">
+                                <span class="ml-1">Fride (Rs. ${formatPrice(
+                                  item.flavors.fride
+                                )})</span>
+                            </label>`
+                              : ""
+                          }
+                          ${
+                            item.flavors.devilled
+                              ? `
+                            <label class="flex items-center">
+                                <input type="radio" name="${item.name.replace(
+                                  /\s/g,
+                                  "-"
+                                )}-size-${itemId}" value="devilled" class="h-4 w-4 text-amber-600 border-gray-300 focus:ring-amber-500">
+                                <span class="ml-1 font-bold text-amber-700">Devilled (Rs. ${formatPrice(
+                                  item.flavors.devilled
+                                )})</span>
+                            </label>`
+                              : ""
+                          }
+                          ${
+                            item.flavors.curry
+                              ? `
+                            <label class="flex items-center">
+                                <input type="radio" name="${item.name.replace(
+                                  /\s/g,
+                                  "-"
+                                )}-size-${itemId}" value="curry" checked class="h-4 w-4 text-amber-600 border-gray-300 focus:ring-amber-500">
+                                <span class="ml-1">Curry (Rs. ${formatPrice(
+                                  item.flavors.curry
+                                )})</span>
+                            </label>`
+                              : ""
+                          }
+                          ${
+                            item.flavors.hotbutter
+                              ? `
+                            <label class="flex items-center">
+                                <input type="radio" name="${item.name.replace(
+                                  /\s/g,
+                                  "-"
+                                )}-size-${itemId}" value="hotbutter" class="h-4 w-4 text-amber-600 border-gray-300 focus:ring-amber-500">
+                                <span class="ml-1 font-bold text-amber-700">Hot Butter (Rs. ${formatPrice(
+                                  item.flavors.hotbutter
+                                )})</span>
+                            </label>`
+                              : ""
+                          }
+                          ${
+                            item.flavors.buttefride
+                              ? `
+                            <label class="flex items-center">
+                                <input type="radio" name="${item.name.replace(
+                                  /\s/g,
+                                  "-"
+                                )}-size-${itemId}" value="buttefride" checked class="h-4 w-4 text-amber-600 border-gray-300 focus:ring-amber-500">
+                                <span class="ml-1">Buuter Fride (Rs. ${formatPrice(
+                                  item.flavors.buttefride
+                                )})</span>
+                            </label>`
+                              : ""
+                          }
+                          ${
+                            item.flavors.stew
+                              ? `
+                            <label class="flex items-center">
+                                <input type="radio" name="${item.name.replace(
+                                  /\s/g,
+                                  "-"
+                                )}-size-${itemId}" value="stew" class="h-4 w-4 text-amber-600 border-gray-300 focus:ring-amber-500">
+                                <span class="ml-1 font-bold text-amber-700">Stew (Rs. ${formatPrice(
+                                  item.flavors.stew
+                                )})</span>
+                            </label>`
+                              : ""
+                          }
+
+                        </div>
+
+                        <button
+                            onclick="window.handleAddToCartClick(this)"
+                            data-item-id="${itemId}"
+                            data-is-flavoured="true"
+                            data-is-dual-size="false"
+                            class="flex-shrink-0 px-3 py-1 text-sm font-semibold text-white bg-green-500 rounded-lg hover:bg-green-600 transition duration-150">
+                            Add to Cart
+                        </button>
+                    </div>
+                  </div>`;
+                } else if (item.price) {
+                  // Single Price Item Block
+                  return `
+                  <div class="flex justify-between items-center border-b border-dashed border-gray-100 pb-2 ${
+                    item.isAddOn ? "ml-4" : ""
+                  }">
+                    <div class="${
+                      item.isAddOn
+                        ? "text-sm text-gray-500 italic"
+                        : "font-medium text-gray-700"
+                    }">
+                      ${item.name}
+                      ${
+                        item.description
+                          ? `<p class="text-xs text-gray-400 mt-0.5">${item.description}</p>`
+                          : ""
+                      }
+                      ${
+                        item.note
+                          ? `<p class="text-xs text-red-400 mt-0.5">(Note: ${item.note})</p>`
+                          : ""
+                      }
+                      <div class="font-mono text-amber-700 font-bold text-base mt-1">Rs. ${formatPrice(
+                        item.price
+                      )}</div>
+                    </div>
+
+                    <button
+                        onclick="window.handleAddToCartClick(this)"
+                        data-item-id="${itemId}"
+                        data-is-dual-size="false"
+                        data-is-flavoured="false"
+                        class="flex-shrink-0 px-3 py-1 text-sm font-semibold text-white bg-green-500 rounded-lg hover:bg-green-600 transition duration-150 ml-4">
+                        Add to Cart
+                    </button>
+                  </div>`;
+                }
+                return "";
+              })
+              .join("")}
+          </div>
+        </section>`;
+          });
+
+          menuTarget.innerHTML = htmlContent;
+          window.updateCartCount();
+          window.updateTableDisplay();
         }
 
-        let message = `*${RESTAURANT_NAME} - New Order*\n\n`;
-        message += `*Table No:* ${tableNumber}\n\n`;
-        message += `*--- Order Details ---\n*`;
+        // Updated window.onload sequence
+        window.onload = () => {
+          getTableNumberFromUrl(); // 1. Get the table number from URL
+          injectMenu(); // 2. Then inject the menu and update the display
+        };
+      </script>
 
-        let total = 0;
-        cart.forEach((item) => {
-          const itemTotal = item.price * item.quantity;
-          total += itemTotal;
-          message += `${item.quantity}x ${item.name} (LKR ${item.price.toFixed(
-            2
-          )}) = LKR ${itemTotal.toFixed(2)}\n`;
-        });
-
-        message += `*------------------------*\n`;
-        message += `*GRAND TOTAL: LKR ${total.toFixed(2)}*\n\n`;
-        message += `_Please acknowledge this order and confirm the delivery time._`;
-
-        const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-          message
-        )}`;
-
-        // Open WhatsApp in a new tab
-        window.open(whatsappUrl, "_blank");
-
-        // Optional: Clear the cart after successfully opening the WhatsApp link
-        // cart = [];
-        // updateCart();
-      }
-    </script>
+      <footer
+        class="mt-20 pt-8 border-t border-amber-500/30 text-center text-gray-400 text-sm"
+      >
+        <p class="font-medium text-lg text-amber-500 mb-2">
+          WALASMULLA ROAD DENAGAMA, HAKMANA
+        </p>
+        <p>Enjoy Freely. We look forward to serving you!</p>
+        <div class="mt-4 flex justify-center space-x-6">
+          <a href="#" class="hover:text-amber-500 transition duration-300">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"
+              />
+            </svg>
+          </a>
+          <a href="#" class="hover:text-amber-500 transition duration-300">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"
+              />
+              <rect x="2" y="9" width="4" height="12" />
+              <circle cx="4" cy="4" r="2" />
+            </svg>
+          </a>
+        </div>
+      </footer>
+    </div>
   </body>
 </html>
